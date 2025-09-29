@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from datasets import DATASETS_PATH
 
-from si.io.csv_file import read_csv, write_csv
+from si.csv_file import read_csv, write_csv
 
 
 class TestCSVFile(TestCase):
