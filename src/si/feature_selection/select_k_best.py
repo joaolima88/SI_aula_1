@@ -1,0 +1,21 @@
+from si.base.transformer import Transformer
+from si.data.dataset import Dataset
+import numpy as np
+
+
+class SelectKBest(Transformer):
+    def __init__(self, score_func:callable, k:int, **kwargs):
+        self.score_func = score_func
+        self.k = k
+        self.F = None
+        self.p = None
+
+
+    def _fit(self, dataset:Dataset)-> "SelectKBest":
+        self.F, self.p = self.score_func(dataset)
+
+    def _transform(self, dataset:Dataset)-> Dataset:
+        idx = np.argsort(self.F)[-self.k:]
+        X = dataset.X[:, idx]
+        features = dataset.features[:, idx]
+        return Dataset(X=X, features=features, y = dataset.y, label = dataset.label)
