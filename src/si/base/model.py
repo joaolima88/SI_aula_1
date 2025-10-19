@@ -1,9 +1,10 @@
 from abc import ABCMeta, ABC, abstractmethod
+
 from si.base.estimator import Estimator
+from si.data.dataset import Dataset
 
 
 class Model(Estimator, ABC):
-
     """
     Abstract base class for models.
     A model is an object that can predict the target values of a Dataset object.
@@ -52,15 +53,14 @@ class Model(Estimator, ABC):
         """
 
     @abstractmethod
-    def _score(dataset):
+    def _score(self, dataset: Dataset):
         pass
 
-    def score(self, dataset):
+    def score(self, dataset: Dataset):
         if self.is_fitted:
-            self.is_fitted()
+            self._score(dataset)
         else:
-            raise ValueError('Model needs to be fitted before estimating an error')
-
+            raise ValueError("The model should be fitted before estimating an error value. Call the method fit first")
 
     def fit_predict(self, dataset):
         """
