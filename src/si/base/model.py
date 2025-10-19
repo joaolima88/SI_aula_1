@@ -1,9 +1,9 @@
 from abc import ABCMeta, ABC, abstractmethod
-
 from si.base.estimator import Estimator
 
 
 class Model(Estimator, ABC):
+
     """
     Abstract base class for models.
     A model is an object that can predict the target values of a Dataset object.
@@ -50,6 +50,17 @@ class Model(Estimator, ABC):
         predictions: np.ndarray
             The predicted target values.
         """
+
+    @abstractmethod
+    def _score(dataset):
+        pass
+
+    def score(self, dataset):
+        if self.is_fitted:
+            self.is_fitted()
+        else:
+            raise ValueError('Model needs to be fitted before estimating an error')
+
 
     def fit_predict(self, dataset):
         """
