@@ -15,7 +15,6 @@ class TestKFoldCrossValidation(TestCase):
 
     def setUp(self):
         self.csv_file = os.path.join(DATASETS_PATH, 'breast_bin', 'breast-bin.csv')
-
         self.dataset = read_data_file(filename=self.csv_file, label=True, sep=",")
 
     def test_k_fold_cross_validation(self):

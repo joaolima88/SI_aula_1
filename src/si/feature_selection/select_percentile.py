@@ -11,20 +11,6 @@ class SelectPercentile(Transformer):
         Selects features from the given percentile of a score function
         and returns a new Dataset object with the selected features.
 
-        methods:- _fit – estimates the F and p values for each feature using the scoring_func;
-        returns itself (self)- _transform – Selects a given percentage of features based on their F-values,
-        ensuring the number of selected features adheres to the specified percentile.
-        The method handles ties at the threshold to maintain the correct number of
-        features. Example: Suppose you have 10 features with F-values [1.2, 3.4, 2.1,
-        5.6, 4.3, 5.6, 7.8, 6.5, 5.6, 3.2] and set percentile=40. The threshold is
-        calculated as the F-value at the 60th percentile, which is 5.6. Initially, the
-        mask selects features with F-values greater than 5.6, resulting in [7.8, 6.5].
-        Since we need 4 features (40% of 10), the method identifies ties at the
-        threshold (5.6) and includes the first two of these tied features ([5.6, 5.6]) to
-        meet the requirement. The final selected features are [5.6, 5.6, 7.8, 6.5],
-        ensuring the output adheres to the specified percentile.
-
-
         Parameters
         ----------
         percentile : float
@@ -72,16 +58,12 @@ class SelectPercentile(Transformer):
         dataset : Dataset
             A new Dataset object with the selected features.
         """
-        threshold = np.percentile(self.F, 100 - self.percentile)
 
-        mask = self.F >= threshold
-
-        if mask.sum() > int(len(self.F) * self.percentile / 100):
-            sorted_indices = np.argsort(-self.F)
-            num_features = int(len(self.F) * self.percentile / 100)
-            selected_indices = sorted_indices[:num_features]
-            mask = np.zeros_like(self.F, dtype=bool)
-            mask[selected_indices] = True
+        sorted_indices = np.argsort(-self.F)
+        num_features = int(len(self.F) * self.percentile / 100)
+        selected_indices = sorted_indices[:num_features]
+        mask = np.zeros_like(self.F, dtype=bool)
+        mask[selected_indices] = True
 
         selected_features = np.array(dataset.features)[mask]
         return Dataset(X=dataset.X[:, mask], y=dataset.y, features=list(selected_features), label=dataset.label)
