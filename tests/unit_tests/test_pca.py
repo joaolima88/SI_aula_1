@@ -1,13 +1,4 @@
 from unittest import TestCase
-
-import numpy as np
-
-from datasets import DATASETS_PATH
-from si.io.csv_file import read_csv
-import os
-from si.decomposition.pca import PCA
-
-from unittest import TestCase
 import numpy as np
 import os
 from si.io.csv_file import read_csv
@@ -30,74 +21,74 @@ class TestPCA(TestCase):
 
     def test_fit(self):
         """
-        Testa o processo de ajuste (_fit) do PCA para garantir que a média,
-        as componentes e a variância explicada são computadas e armazenadas corretamente.
+        Tests the PCA fitting process (_fit) to ensure that the mean,
+        components and explained variance are computed and stored correctly.
         """
 
-        # O número de features originais (Iris) é 4
+        # The number of original features (Iris) is 4
         n_features_original = self.dataset.X.shape[1]
 
-        # 1. Execução do Fit
+        # 1. Fit Execution
         self.pca._fit(self.dataset)
 
-        # 2. Verificação de self.mean (Média das Features)
-        # O self.pca.mean deve ser o vetor de médias de cada coluna
+        # 2. Verification of self.mean (Mean of Features)
+        # self.pca.mean should be the vector of means for each column
         expected_mean = np.mean(self.dataset.X, axis=0)
         self.assertTrue(np.allclose(self.pca.mean, expected_mean))
         self.assertEqual(self.pca.mean.shape, (n_features_original,))
 
-        # 3. Verificação de self.components (Componentes Principais)
-        # O shape deve ser (n_components, n_features_original)
+        # 3. Verification of self.components (Principal Components)
+        # The shape should be (n_components, n_features_original)
         expected_components_shape = (self.n_components, n_features_original)
         self.assertEqual(self.pca.components.shape, expected_components_shape)
 
-        # 4. Verificação de self.explained_variance (Variância Explicada)
-        # O número de entradas deve ser igual a n_components
+        # 4. Verification of self.explained_variance (Explained Variance)
+        # The number of entries should be equal to n_components
         self.assertEqual(len(self.pca.explained_variance), self.n_components)
 
-        # 5. Verificação de Limites da Variância Explicada (Proporção)
-        # Os valores individuais devem estar entre 0 e 1, e a soma não pode ser maior que 1
+        # 5. Verification of Explained Variance Limits (Proportion)
+        # Individual values should be between 0 and 1, and the sum cannot be greater than 1
         self.assertTrue(np.all(self.pca.explained_variance >= 0) and np.all(self.pca.explained_variance <= 1))
 
-        # 6. Verificação de Ordem (Confirma a Lógica de Ordenação)
-        # O primeiro valor deve ser maior ou igual ao segundo, confirmando a ordenação decrescente
+        # 6. Verification of Order (Confirms the Sorting Logic)
+        # The first value should be greater than or equal to the second, confirming descending order
         self.assertTrue(self.pca.explained_variance[0] >= self.pca.explained_variance[1])
 
 
     def test_transform(self):
         """
-        Testa se o _transform projeta corretamente os dados para o novo espaço dimensional,
-        preservando o número de amostras e o tipo do objeto retornado.
+        Tests if _transform correctly projects the data to the new dimensional space,
+        preserving the number of samples and the type of the returned object.
         """
 
-        # O número de features originais (Iris) é 4
+        # The number of original features (Iris) is 4
 
-        # 1. Fit e Transformação
+        # 1. Fit and Transformation
         self.pca.fit(self.dataset)
 
-        # dataset_transformed é o objeto Dataset devolvido por transform()
+        # dataset_transformed is the Dataset object returned by transform()
         dataset_transformed = self.pca.transform(self.dataset)
 
-        # Array NumPy com os dados reduzidos
+        # NumPy array with the reduced data
         X_reduced = dataset_transformed.X
 
-        # 2. Asserções Críticas
+        # 2. Critical Assertions
 
-        # A) Verificação de Tipo (Deve devolver um objeto Dataset)
+        # A) Type Verification (Should return a Dataset object)
         self.assertIsInstance(dataset_transformed, type(self.dataset))
 
-        # B) Verificação do Shape (Dimensão Correta)
-        # Número de linhas (amostras) deve ser o mesmo
+        # B) Shape Verification (Correct Dimension)
+        # Number of rows (samples) should be the same
         self.assertEqual(X_reduced.shape[0], self.dataset.X.shape[0])
 
-        # Número de colunas (features) deve ser igual a n_components (2)
+        # Number of columns (features) should be equal to n_components (2)
         self.assertEqual(X_reduced.shape[1], self.n_components)
 
-        # C) Verificação da Média (Dados Centrados)
-        # O resultado X_reduced deve ter média ~0 em cada componente (PC)
-        # Note: Esta é uma verificação forte, mas útil para o PCA.
+        # C) Mean Verification (Centered Data)
+        # The X_reduced result should have mean ~0 in each component (PC)
+        # Note: This is a strong verification, but useful for PCA.
         self.assertTrue(np.allclose(np.mean(X_reduced, axis=0), 0.0))
 
-        # D) Verificação dos Nomes das Features
+        # D) Feature Names Verification
         expected_features = ['PC1', 'PC2']
         self.assertEqual(dataset_transformed.features, expected_features)

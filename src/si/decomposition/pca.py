@@ -56,7 +56,6 @@ class PCA(Transformer):
         Estimates the mean, principal components, and explained variance using
         eigenvalue decomposition of the covariance matrix
 
-        The steps are:
         1. Infer the mean of the samples (features) and subtract it to center the data
         2. Calculate the covariance matrix and perform eigenvalue decomposition
         3. Infer the principal components by selecting the n_components highest eigenvectors
@@ -72,21 +71,21 @@ class PCA(Transformer):
         self : PCA
             The fitted PCA object.
         """
-        # 1. Centrar os Dados
+        # 1. Center the Data
         self.mean = dataset.get_mean()
         X_centered = dataset.X - self.mean
 
-        # 2. Calcular Covariância e Decomposição
-        co_matrix = np.cov(X_centered, rowvar=False)  # rowvar=False → colunas são as features
-        eigen_values, eigen_vectors = np.linalg.eig(co_matrix)  # Retorna autovalores (lambda) e autovetores (V)
+        # 2. Calculate Covariance and Decomposition
+        co_matrix = np.cov(X_centered, rowvar=False)  # rowvar=False → columns are the features
+        eigen_values, eigen_vectors = np.linalg.eig(co_matrix)  # Returns eigenvalues (lambda) and eigenvectors (V)
 
-        # 3. Ordenar e Selecionar Índices
+        # 3. Sort and Select Indices
         sorted_indices = np.argsort(eigen_values)[::-1][:self.n_components]
 
-        # 4. Inferir Componentes Principais (Autovetores ordenados)
+        # 4. Infer Principal Components (sorted eigenvectors)
         self.components = eigen_vectors[:, sorted_indices].T  # self.components (n_components x n_features)
 
-        # 5. Inferir a Variância Explicada
+        # 5. Infer Explained Variance
         total_variance = np.sum(eigen_values)
         self.explained_variance = eigen_values[sorted_indices] / total_variance
 
@@ -107,13 +106,13 @@ class PCA(Transformer):
         Dataset
             A new Dataset object containing the reduced data (X_reduced = X_centered @ V)
         """
-        # 1. Centrar os Dados (Usando a média inferida no _fit)
+        # 1. Center the Data (Using the mean inferred in _fit)
         X_centered = dataset.X - self.mean  # X - mean
 
-        # 2. Calcular o X Reduzido (Projeção)
+        # 2. Calculate Reduced X (Projection)
         # X_reduced = X_centered @ components.T
-        X_reduced = np.dot(X_centered, self.components.T)  # Multiplicação matricial
+        X_reduced = np.dot(X_centered, self.components.T)  # Matrix multiplication
 
-        # 3. Criar e devolver um novo Dataset
+        # 3. Create and return a new Dataset
         features = ["PC" + str(i) for i in range(1, self.n_components + 1)]
         return Dataset(X=X_reduced, y=dataset.y, features=features, label=dataset.label)
