@@ -3,7 +3,8 @@ import numpy as np
 def tanimoto_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     Computes the Tanimoto similarity (Jaccard Coefficient)
-    of a single binary point (x) to a set of binary points (y).
+    of a single binary point (x) to a set of binary points (y)
+    using the formula S_J(x, y) = (∑(x_i · y_i)) / (∑x_i + ∑y_i - ∑(x_i · y_i)).
 
     Parameters
     ----------
@@ -19,8 +20,8 @@ def tanimoto_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 
     """
-    numerator = np.sum(x * y, axis=1)
-    denominator = np.sum(x) + np.sum(y, axis=1) - numerator
+    numerator = np.sum(x * y, axis=1) # ∑(x_i · y_i)
+    denominator = np.sum(x) + np.sum(y, axis=1) - numerator # ∑x_i + ∑y_i - ∑(x_i · y_i)
     return np.divide(numerator, denominator, out=np.zeros_like(numerator, dtype=float), where=denominator != 0)
 
 
