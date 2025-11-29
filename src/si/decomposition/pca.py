@@ -78,12 +78,10 @@ class PCA(Transformer):
 
         # 2. Calcular Covariância e Decomposição
         co_matrix = np.cov(X_centered, rowvar=False)  # rowvar=False → colunas são as features
-        eigen_values, eigen_vectors = np.linalg.eig(
-            co_matrix)  # Retorna autovalores (lambda) e autovetores (V)
+        eigen_values, eigen_vectors = np.linalg.eig(co_matrix)  # Retorna autovalores (lambda) e autovetores (V)
 
         # 3. Ordenar e Selecionar Índices
-        sorted_indices = np.argsort(eigen_values)[::-1][
-                         :self.n_components]  # Seleciona índices dos n_components maiores autovalores
+        sorted_indices = np.argsort(eigen_values)[::-1][:self.n_components]
 
         # 4. Inferir Componentes Principais (Autovetores ordenados)
         self.components = eigen_vectors[:, sorted_indices].T  # self.components (n_components x n_features)
