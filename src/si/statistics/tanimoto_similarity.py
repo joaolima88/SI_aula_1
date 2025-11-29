@@ -21,7 +21,7 @@ def tanimoto_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     numerator = np.sum(x * y, axis=1)
     denominator = np.sum(x) + np.sum(y, axis=1) - numerator
-    return np.divide(numerator, denominator, out=np.zeros_like(numerator, dtype=float),where=denominator != 0)
+    return np.divide(numerator, denominator, out=np.zeros_like(numerator, dtype=float), where=denominator != 0)
 
 
 if __name__ == '__main__':

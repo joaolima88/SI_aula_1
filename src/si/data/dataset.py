@@ -176,9 +176,13 @@ class Dataset:
             rows, cols = np.where(np.isnan(self.X))
             self.X[rows, cols] = stats[cols]
             return self
-        else:
+
+        elif isinstance(value, (float, int)):
             self.X[np.isnan(self.X)] = value
             return self
+
+        else:
+            raise TypeError("Invalid type for 'value'. Must be a float, int, or str ('mean' or 'median').")
 
 
 
