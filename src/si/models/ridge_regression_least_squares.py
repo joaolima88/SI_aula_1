@@ -55,7 +55,7 @@ class RidgeRegressionLeastSquares(Model):
         # 1. Scale the data if required
         if self.scale:
             # compute mean and std
-            self.mean = np.nanmean(dataset.X, axis=0)
+            self.mean = dataset.get_mean()
             self.std = np.nanstd(dataset.X, axis=0)
             # scale X
             X_scaled = (dataset.X - self.mean) / self.std
