@@ -81,7 +81,7 @@ def stratified_train_test_split(dataset: Dataset, test_size: float = 0.2, random
     np.random.seed(random_state)
 
     # Identify unique classes in the dataset
-    unique_labels = np.unique(dataset.y)
+    unique_labels = dataset.get_classes()
 
     # Initialize lists to store indices for training and test sets
     train_indices = []
